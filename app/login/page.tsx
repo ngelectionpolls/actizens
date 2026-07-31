@@ -29,7 +29,7 @@ interface LeftHeroLayoutProps {
   bottomCard?: React.ReactNode;
 }
 
-export default function ASIFAuthFlow({ onNavigateToRegister }: { onNavigateToRegister?: () => void }) {
+export default function ASIFAuthFlow() {
   const [currentPage, setCurrentPage] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,11 +39,7 @@ export default function ASIFAuthFlow({ onNavigateToRegister }: { onNavigateToReg
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegisterClick = () => {
-    if (onNavigateToRegister) {
-      onNavigateToRegister();
-    } else {
-      window.location.href = '/register';
-    }
+    window.location.href = '/register';
   };
 
   const LeftHeroLayout = ({ badge, title, subtitle, features, bottomCard }: LeftHeroLayoutProps) => (
