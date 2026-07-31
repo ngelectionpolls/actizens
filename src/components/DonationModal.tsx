@@ -132,7 +132,7 @@ export function DonationModal({
     if (!isOpen) {
       // Full reset
       setFrequency("once"); setDiaspora(false); setCurrency("USD");
-      setPreset(null); setCustom(""); setAllocation("most");
+      setPreset(null); setCustom(""); setAllocation("hero");
       setMessage(""); setMethod("paystack"); setAnonymous(false);
       setSubmitted(false); setLoading(false);
     }

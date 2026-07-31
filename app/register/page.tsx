@@ -29,10 +29,6 @@ import {
 
 type RoleVariant = "eyewitness" | "reporter" | "generic";
 
-interface RegisterPageProps {
-  initialVariant?: RoleVariant;
-}
-
 function AsifLogo() {
   return (
     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0b5a35] text-sm font-black text-white">
@@ -41,8 +37,8 @@ function AsifLogo() {
   );
 }
 
-export default function RegisterPage({ initialVariant = "eyewitness" }: RegisterPageProps) {
-  const [variant, setVariant] = useState<RoleVariant>(initialVariant);
+export default function RegisterPage() {
+  const [variant, setVariant] = useState<RoleVariant>("eyewitness");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
