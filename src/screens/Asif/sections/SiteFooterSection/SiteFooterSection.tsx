@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { NGELECTIONPOLLS_SIGNUP_URL } from "@/lib/registration";
 import { Facebook, Twitter, Linkedin, Instagram, ArrowRight, Mail, MapPin, Phone, Youtube, Heart } from "lucide-react";
 
 const footerColumns = [
@@ -16,7 +17,7 @@ const footerColumns = [
   {
     heading: "For Reporters",
     links: [
-      { label: "Register Now",           href: "/register" },
+      { label: "Register Now",           href: NGELECTIONPOLLS_SIGNUP_URL },
       { label: "Training & Resources",   href: "#" },
       { label: "Reporter Dashboard",     href: "#" },
       { label: "FAQs",                   href: "#" },

@@ -1,3 +1,23 @@
+.registration-ticker {
+  width: max-content;
+  animation: ticker-scroll 40s linear infinite;
+}
+
+.registration-ticker:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registration-ticker {
+    animation: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+  .registration-ticker > [aria-hidden="true"] {
+    display: none;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

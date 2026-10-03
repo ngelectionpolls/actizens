@@ -3,6 +3,7 @@
 import { Menu, X, User, LogIn, UserPlus, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { NGELECTIONPOLLS_SIGNUP_URL, NGELECTIONPOLLS_LOGIN_URL } from "@/lib/registration";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -91,7 +92,7 @@ export const MainNavigationSection = ({ activePage }: MainNavigationSectionProps
 
           {/* Login */}
           <Link
-            href="/login"
+            href={NGELECTIONPOLLS_LOGIN_URL}
             className="group flex h-9 items-center gap-1.5 rounded-full border border-[#0b5a35]/30 bg-transparent px-4 text-[13px] font-semibold text-[#0b5a35] transition-all duration-200 hover:border-[#0b5a35] hover:bg-[#0b5a35]/8 dark:border-[#4ade80]/30 dark:text-[#4ade80] dark:hover:border-[#4ade80]/70 dark:hover:bg-[#4ade80]/8"
           >
             <LogIn className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -100,7 +101,7 @@ export const MainNavigationSection = ({ activePage }: MainNavigationSectionProps
 
           {/* Register */}
           <Link
-            href="/register"
+            href={NGELECTIONPOLLS_SIGNUP_URL}
             className="group relative flex h-9 items-center gap-1.5 overflow-hidden rounded-full bg-gradient-to-r from-[#0b5a35] to-[#15834f] px-5 text-[13px] font-semibold text-white shadow-sm shadow-[#0b5a35]/25 transition-all duration-200 hover:shadow-md hover:shadow-[#0b5a35]/30"
           >
             {/* Sheen */}
@@ -177,7 +178,7 @@ export const MainNavigationSection = ({ activePage }: MainNavigationSectionProps
           {/* Auth buttons */}
           <div className="flex flex-col gap-2.5">
             <Link
-              href="/login"
+              href={NGELECTIONPOLLS_LOGIN_URL}
               onClick={() => setMobileOpen(false)}
               className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[#0b5a35]/30 bg-transparent text-sm font-semibold text-[#0b5a35] transition-all hover:border-[#0b5a35] hover:bg-[#0b5a35]/8 dark:border-[#4ade80]/30 dark:text-[#4ade80] dark:hover:bg-[#4ade80]/8"
             >
@@ -185,7 +186,7 @@ export const MainNavigationSection = ({ activePage }: MainNavigationSectionProps
               Login to your account
             </Link>
             <Link
-              href="/register"
+              href={NGELECTIONPOLLS_SIGNUP_URL}
               onClick={() => setMobileOpen(false)}
               className="group relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#0b5a35] to-[#15834f] text-sm font-semibold text-white shadow-sm shadow-[#0b5a35]/20 transition-all hover:shadow-md hover:shadow-[#0b5a35]/30"
             >

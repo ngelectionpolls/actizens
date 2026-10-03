@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?.next/cache/
 .next
+
+# Secrets and local deployment settings
+.env
+.env.*
+!.env.example
+.vercel/
+*.tsbuildinfo

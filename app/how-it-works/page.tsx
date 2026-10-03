@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { NGELECTIONPOLLS_SIGNUP_URL } from "@/lib/registration";
 import {
   UserRound, BadgeCheck, Monitor, MessageSquare, Trophy,
   ArrowRight, Shield, Users, Phone, Globe, Zap,
@@ -14,7 +15,7 @@ import { AnimateIn } from "@/components/AnimateIn";
 const steps = [
   {
     number: "01", icon: UserRound, title: "Register & Create Profile",
-    description: "Sign up on the ASIF platform and complete your profile. Provide your contact information, location, and identification documents for verification.",
+    description: "Sign up on NGelectionpolls and complete your profile. Provide your contact information, location, and identification documents for verification.",
     accent: "#4ade80", accentRgb: "74,222,128",
     points: ["Simple online registration form", "Upload valid ID", "Confirm your polling unit", "Receive confirmation email"],
   },
@@ -112,7 +113,7 @@ export default function HowItWorksPage() {
                 <AnimateIn direction="left" delay={300}>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
                     <Link
-                      href="/register"
+                      href={NGELECTIONPOLLS_SIGNUP_URL}
                       className="group relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl px-6 text-sm font-bold text-[#0d1b12] transition-all hover:-translate-y-0.5"
                       style={{ background: "#4ade80", boxShadow: "0 4px 24px rgba(74,222,128,0.35)" }}
                     >
@@ -316,7 +317,7 @@ export default function HowItWorksPage() {
                     <p className="text-[12px]" style={{ color: "rgba(165,196,168,0.55)" }}>
                       Join thousands of citizens already registered to monitor elections across Nigeria.
                     </p>
-                    <Link href="/register"
+                    <Link href={NGELECTIONPOLLS_SIGNUP_URL}
                       className="group relative flex h-11 items-center justify-center gap-2 overflow-hidden rounded-xl text-sm font-bold text-white transition-all hover:-translate-y-0.5"
                       style={{ background: "linear-gradient(135deg,#0b5a35,#15834f)", boxShadow: "0 4px 20px rgba(11,90,53,0.40)" }}>
                       <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/12 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -386,7 +387,7 @@ export default function HowItWorksPage() {
                     <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/12 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                     Contact Us
                   </Link>
-                  <Link href="/register"
+                  <Link href={NGELECTIONPOLLS_SIGNUP_URL}
                     className="flex h-11 items-center gap-2 rounded-xl border px-6 text-sm font-bold text-[#4ade80] transition-all hover:-translate-y-0.5"
                     style={{ borderColor: "rgba(74,222,128,0.20)", background: "rgba(74,222,128,0.05)" }}>
                     Register Now
