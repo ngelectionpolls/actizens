@@ -1,0 +1,93 @@
+import { NextResponse } from 'next/server';
+import geo from '@/data/donationsGeo.json';
+import { connectDB } from '@/lib/mongodb';
+import User from '@/lib/models/User';
+
+// Install in the NGelectionpolls backend at:
+// src/app/api/recent-eyewitness-registrations/route.ts
+// Uses its existing MongoDB connection and data; does not write or migrate anything.
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+const LIMIT = 15;
+type Geo = { states: { n: string; lgas: { n: string; wards: { n: string }[] }[] }[] };
+const keyPart = (value: string) => value.trim().replace(/\s+/g, ' ').toUpperCase();
+const locationKey = (state: string, lga: string, ward: string) =>
+  [state, lga, ward].map(keyPart).join('\u001f');
+const titleCase = (value: string) =>
+  value.toUpperCase() === 'FCT' ? 'FCT' :
+    value.toLowerCase().replace(/\b\w/g, character => character.toUpperCase());
+
+// Use exactly the same coverage registry and name matching as reporter-coverage.
+const locations = new Map<string, string>();
+for (const state of (geo as unknown as Geo).states) {
+  for (const lga of state.lgas) {
+    for (const ward of lga.wards) {
+      locations.set(locationKey(state.n, lga.n, ward.n), titleCase(state.n));
+    }
+  }
+}
+
+export async function GET() {
+  try {
+    await connectDB();
+    // Sorting happens BEFORE selecting eligible locations. The cursor continues
+    // past unmatched profiles instead of limiting early and losing newer matches.
+    // MongoDB projects the surname initial: the complete surname never leaves DB.
+    const cursor = User.aggregate([
+      { $match: {
+        role: 'eyewitness', biodataCompleted: true,
+        firstName: { $type: 'string', $regex: /\S/ },
+        coverageState: { $type: 'string', $regex: /\S/ },
+        lga: { $type: 'string', $regex: /\S/ },
+        ward: { $type: 'string', $regex: /\S/ },
+        createdAt: { $type: 'date' },
+      } },
+      { $sort: { createdAt: -1, _id: -1 } },
+      { $project: {
+        _id: 0,
+        firstName: { $trim: { input: '$firstName' } },
+        lastInitial: { $substrCP: [{ $trim: { input: { $ifNull: ['$lastName', ''] } } }, 0, 1] },
+        coverageState: 1, lga: 1, ward: 1, createdAt: 1,
+      } },
+    ]).option({ maxTimeMS: 8_000 }).cursor({ batchSize: 30 });
+    const registrations: {
+      firstName: string; lastInitial: string; state: string; registeredAt: string;
+    }[] = [];
+    try {
+      for await (const row of cursor) {
+        const state = locations.get(locationKey(
+          String(row.coverageState), String(row.lga), String(row.ward),
+        ));
+        if (!state) continue;
+        const firstName = String(row.firstName).trim().replace(/\s+/g, ' ');
+        const lastInitial = String(row.lastInitial ?? '');
+        // Skip invalid display fields rather than publishing full names or
+        // inventing initials. A missing surname is displayed as first name only.
+        if (!firstName || firstName.length > 80 ||
+            /[<>@\u0000-\u001f]/.test(firstName) || !/^\p{L}?$/u.test(lastInitial)) continue;
+        const registeredAt = new Date(row.createdAt);
+        if (!Number.isFinite(registeredAt.getTime()) ||
+            registeredAt.getTime() > Date.now() + 60_000) continue;
+        registrations.push({
+          firstName, lastInitial, state, registeredAt: registeredAt.toISOString(),
+        });
+        if (registrations.length === LIMIT) break;
+      }
+    } finally {
+      await cursor.close();
+    }
+    // Never expose account IDs, complete surnames, email, phone, exact polling
+    // locations, verification documents, bank details, or arbitrary user fields.
+    return NextResponse.json(
+      { schemaVersion: 1, registrations },
+      { headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } },
+    );
+  } catch {
+    // Do not log the query, personal records, or connection details.
+    return NextResponse.json(
+      { error: 'Recent eyewitness registrations are temporarily unavailable.' },
+      { status: 503, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+}

@@ -7,6 +7,8 @@ import {
   Geography,
   Marker,
 } from "react-simple-maps";
+import { POLLING_UNITS, REPORTERS_PER_UNIT, formatCount } from "@/lib/eyewitness-coverage";
+import { formatCoveragePercentage, type ReporterCoverage } from "@/lib/reporter-coverage";
 
 const STATE_FUNDING_MAP: Record<string, number> = {
   // 25–49% funded tier
@@ -105,9 +107,11 @@ interface HoverInfo {
 interface Props {
   selectedStateId: string;
   onSelectState: (state: StateMapData) => void;
+  mode?: "funding" | "reporters";
+  reporterCoverage?: ReporterCoverage | null;
 }
 
-export default function NigeriaMapHome({ selectedStateId, onSelectState }: Props) {
+export default function NigeriaMapHome({ selectedStateId, onSelectState, mode = "funding", reporterCoverage }: Props) {
   const [geoData, setGeoData] = useState<any>(null);
   const [hovered, setHovered] = useState<HoverInfo | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -153,6 +157,15 @@ export default function NigeriaMapHome({ selectedStateId, onSelectState }: Props
           }}
         >
           <p className="mb-1.5 text-xs font-semibold text-white">{hovered.displayName}</p>
+          {mode === "reporters" ? (
+            <div className="space-y-1 text-[11px] text-white/75">
+              <p>Polling units: <strong className="text-white">{formatCount(POLLING_UNITS[hovered.stateId] ?? 0)}</strong></p>
+              <p>Reporters needed: <strong className="text-white">{formatCount((POLLING_UNITS[hovered.stateId] ?? 0) * REPORTERS_PER_UNIT)}</strong></p>
+              <p>Completed profiles: <strong className="text-white">{reporterCoverage ? formatCount(reporterCoverage.states[hovered.stateId].registered) : "Unavailable"}</strong></p>
+              <p>Target filled: <strong className="text-white">{reporterCoverage ? formatCoveragePercentage(reporterCoverage.states[hovered.stateId].percentage) : "—"}</strong></p>
+            </div>
+          ) : (
+          <>
           <div className="mb-2 flex items-center justify-between">
             <span
               className="rounded px-1.5 py-0.5 text-[10px] font-semibold text-white"
@@ -177,6 +190,8 @@ export default function NigeriaMapHome({ selectedStateId, onSelectState }: Props
               </span>
             </p>
           )}
+          </>
+          )}
         </div>
       )}
 
@@ -195,11 +210,14 @@ export default function NigeriaMapHome({ selectedStateId, onSelectState }: Props
                 .toLowerCase()
                 .replace(/\bstate\b/gi, "")
                 .replace(/federal capital territory/gi, "fct")
+                .replace(/nassarawa/gi, "nasarawa")
+                .replace(/\s/g, "")
                 .trim();
+              if (mode === "reporters" && !POLLING_UNITS[stateId]) return null;
               const displayName = stateId === "fct" ? "Federal Capital Territory" : rawName;
-              const pct = STATE_FUNDING_MAP[stateId] ?? 0;
+              const pct = mode === "reporters" ? reporterCoverage?.states[stateId]?.percentage ?? 0 : STATE_FUNDING_MAP[stateId] ?? 0;
               const selected = isSelected(stateId, selectedStateId);
-              const fill = getStateColor(pct);
+              const fill = mode === "reporters" && !reporterCoverage ? "#176845" : getStateColor(pct);
 
               return (
                 <Geography
@@ -265,9 +283,9 @@ export default function NigeriaMapHome({ selectedStateId, onSelectState }: Props
         {Object.entries(STATE_CENTROIDS).map(([key, coords]) => {
           const label = STATE_DISPLAY_NAMES[key] ?? key;
           const sel = isSelected(key, selectedStateId);
-          const pct = STATE_FUNDING_MAP[key] ?? 0;
+           const pct = mode === "reporters" ? reporterCoverage?.states[key]?.percentage ?? 0 : STATE_FUNDING_MAP[key] ?? 0;
           // Dark text on unfunded (light gray) states for readability
-          const textColor = pct === 0 ? "#555555" : "#FFFFFF";
+           const textColor = (mode === "reporters" && !reporterCoverage) || pct !== 0 ? "#FFFFFF" : "#555555";
           return (
             <Marker
               key={key}
@@ -277,7 +295,7 @@ export default function NigeriaMapHome({ selectedStateId, onSelectState }: Props
                   key === "fct"
                     ? "Federal Capital Territory"
                     : `${key.charAt(0).toUpperCase() + key.slice(1)} State`;
-                onSelectState({ id: key, name, percentage: pct, color: getStateColor(pct) });
+                onSelectState({ id: key, name, percentage: pct, color: mode === "reporters" && !reporterCoverage ? "#176845" : getStateColor(pct) });
               }}
             >
               <text

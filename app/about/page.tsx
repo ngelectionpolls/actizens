@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { NGELECTIONPOLLS_SIGNUP_URL } from "@/lib/registration";
 import {
   Users, Building2, GraduationCap, Leaf, Briefcase, Sprout,
   Smartphone, FileText, ShieldCheck, HeartHandshake, UserCheck,
@@ -111,7 +112,7 @@ export default function AboutPage() {
                 <AnimateIn direction="left" delay={300}>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
                     <Link
-                      href="/register"
+                      href={NGELECTIONPOLLS_SIGNUP_URL}
                       className="group relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl px-6 text-sm font-bold text-white transition-all hover:-translate-y-0.5"
                       style={{ background: "linear-gradient(135deg,#0b5a35,#15834f)", boxShadow: "0 4px 24px rgba(11,90,53,0.45)" }}
                     >
@@ -418,7 +419,7 @@ export default function AboutPage() {
                   </p>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
                     <Link
-                      href="/register"
+                      href={NGELECTIONPOLLS_SIGNUP_URL}
                       className="group relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl px-6 text-sm font-bold text-white transition-all hover:-translate-y-0.5"
                       style={{ background: "linear-gradient(135deg,#0b5a35,#15834f)", boxShadow: "0 4px 24px rgba(11,90,53,0.45)" }}
                     >

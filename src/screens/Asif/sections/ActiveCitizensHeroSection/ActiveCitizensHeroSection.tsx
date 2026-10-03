@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import React from "react";
-import { Star, ShieldCheck, ArrowRight, Play, CalendarDays, Zap, TrendingUp } from "lucide-react";
+import { Star, ShieldCheck, ArrowRight, Play, CalendarDays } from "lucide-react";
+import { EyewitnessRegistrationTicker } from "@/components/EyewitnessRegistrationTicker";
+import { useRecentEyewitnessRegistrations } from "@/hooks/useRecentEyewitnessRegistrations";
 
 type LucideIcon = React.ComponentType<{ className?: string; size?: number | string }>;
 
-interface HeroStat { icon?: LucideIcon | React.ReactNode; prefix?: string; value?: string; title?: string; label?: string; }
+interface HeroStat { icon?: LucideIcon | React.ReactNode; prefix?: string; value?: string; title?: string; label?: string; hint?: string; }
 interface HeroBadge { icon?: LucideIcon | React.ReactNode; label: string; }
 interface HeroButton { label: string; href?: string; onClick?: () => void; variant?: "primary" | "secondary" | "outline"; icon?: LucideIcon | React.ReactNode; }
 interface HeroImage { src: string; alt?: string; }
@@ -20,12 +22,8 @@ interface ActiveCitizensHeroProps {
   images?: HeroImage[];
   floatingCard?: { date?: string; label?: string };
   bottomStats?: HeroStat[];
-  tickerDonations?: TickerDonation[];
+  bottomStatsNote?: React.ReactNode;
   className?: string;
-}
-
-export interface TickerDonation {
-  donor: string; amount: string; state: string; location: string; isDiaspora: boolean; timeLabel: string;
 }
 
 function renderIcon(icon: React.ReactNode | React.ComponentType<{ className?: string }>, className = "h-4 w-4") {
@@ -40,8 +38,10 @@ function renderIcon(icon: React.ReactNode | React.ComponentType<{ className?: st
 
 export const ActiveCitizensHeroSection: React.FC<ActiveCitizensHeroProps> = ({
   badge, title, description, primaryButton, secondaryButton,
-  floatingCard, bottomStats = [], tickerDonations = [], className = "",
+  floatingCard, bottomStats = [], bottomStatsNote, className = "",
 }) => {
+  const { feed, status, retry } = useRecentEyewitnessRegistrations();
+  const PrimaryAction = primaryButton?.href ? "a" : "button";
   return (
     <section
       id="home"
@@ -119,8 +119,9 @@ export const ActiveCitizensHeroSection: React.FC<ActiveCitizensHeroProps> = ({
             {/* CTA Buttons */}
             <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up delay-300">
               {primaryButton && (
-                <button
-                  type="button"
+                <PrimaryAction
+                  href={primaryButton.href}
+                  type={primaryButton.href ? undefined : "button"}
                   onClick={primaryButton.onClick}
                   className="group relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl px-6 text-[13px] font-bold text-white transition-all hover:-translate-y-0.5 sm:px-7"
                   style={{
@@ -131,7 +132,7 @@ export const ActiveCitizensHeroSection: React.FC<ActiveCitizensHeroProps> = ({
                   <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/12 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                   {primaryButton.icon ? renderIcon(primaryButton.icon, "h-4 w-4") : <ShieldCheck className="h-4 w-4" />}
                   {primaryButton.label}
-                </button>
+                </PrimaryAction>
               )}
               {secondaryButton && (
                 <button
@@ -157,21 +158,6 @@ export const ActiveCitizensHeroSection: React.FC<ActiveCitizensHeroProps> = ({
               Watch How It Works
             </button>
 
-            {/* Live label */}
-            <div className="mt-6 flex flex-wrap items-center gap-3 animate-fade-up delay-500">
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5"
-                style={{ backdropFilter: "blur(8px)" }}>
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-70" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-                </span>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-green-400">Live</span>
-              </div>
-              <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "rgba(165,196,168,0.65)" }}>
-                <TrendingUp className="h-3.5 w-3.5 text-[#4ade80]/60" />
-                Donations happening across Nigeria
-              </span>
-            </div>
           </div>
 
           {/* ── RIGHT — collage ── */}
@@ -208,30 +194,7 @@ export const ActiveCitizensHeroSection: React.FC<ActiveCitizensHeroProps> = ({
           </div>
         </div>
 
-        {/* ── Donation ticker ── */}
-        {tickerDonations.length > 0 && (
-          <div className="mt-6 overflow-hidden rounded-2xl border border-white/6 py-3"
-            style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(12px)" }}>
-            <div
-              className="flex items-center whitespace-nowrap"
-              style={{ animation: "ticker-scroll 40s linear infinite", width: "max-content" }}
-            >
-              {[...tickerDonations, ...tickerDonations].map((d, idx) => (
-                <span key={idx} className="inline-flex items-center gap-1.5 pr-10 text-[11px]" style={{ color: "rgba(165,196,168,0.7)" }}>
-                  <Zap className="mr-1 h-3 w-3 text-[#fea309]" aria-hidden />
-                  <time className="font-semibold" style={{ color: "rgba(74,222,128,0.65)" }}>{d.timeLabel}</time>
-                  <span className="font-bold text-[#4ade80]">{d.donor}</span>
-                  <span style={{ color: "rgba(165,196,168,0.45)" }}>donated</span>
-                  <strong className="font-extrabold text-[#e8f5e9]">{d.amount}</strong>
-                  <span style={{ color: "rgba(165,196,168,0.45)" }}>to</span>
-                  <strong className="font-bold text-[#4ade80]">
-                    {d.isDiaspora ? `${d.location} 🌍` : d.location || d.state}
-                  </strong>
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+        <EyewitnessRegistrationTicker feed={feed} status={status} onRetry={retry} />
 
         {/* ── Stats bar ── */}
         {bottomStats.length > 0 && (
@@ -241,6 +204,7 @@ export const ActiveCitizensHeroSection: React.FC<ActiveCitizensHeroProps> = ({
               {bottomStats.map((stat, idx) => (
                 <div
                   key={stat.label ?? idx}
+                  title={stat.hint}
                   className="group flex items-center gap-3 px-4 py-4 transition-colors hover:bg-white/4 sm:px-5"
                 >
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-110"
@@ -248,16 +212,18 @@ export const ActiveCitizensHeroSection: React.FC<ActiveCitizensHeroProps> = ({
                     {renderIcon(stat.icon, "h-4 w-4 text-[#4ade80]")}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-black text-[#e8f5e9]">
+                    <p className="text-sm font-black tabular-nums text-[#e8f5e9]">
                       {stat.prefix && <span>{stat.prefix}</span>}{stat.value}
                     </p>
-                    <p className="truncate text-[10px] font-semibold uppercase tracking-wide" style={{ color: "rgba(165,196,168,0.5)" }}>
+                    <p className="text-[10px] font-semibold uppercase leading-relaxed tracking-wide" style={{ color: "rgba(165,196,168,0.5)" }}>
                       {stat.label || stat.title}
                     </p>
+                    {stat.hint && <span className="sr-only">{stat.hint}</span>}
                   </div>
                 </div>
               ))}
             </div>
+            {bottomStatsNote && <p className="border-t border-white/5 px-4 py-3 text-[10px] leading-relaxed text-[#a5c4a8]/70 sm:px-5">{bottomStatsNote}</p>}
           </div>
         )}
       </div>

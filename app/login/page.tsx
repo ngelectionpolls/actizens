@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { NGELECTIONPOLLS_SIGNUP_URL } from "@/lib/registration";
 import { 
   Lock, 
   Mail, 
@@ -37,10 +38,6 @@ export default function ASIFAuthFlow() {
   const [otp, setOtp] = useState(['2', '5', '9', '0', '1', '3']);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleRegisterClick = () => {
-    window.location.href = '/register';
-  };
 
   const LeftHeroLayout = ({ badge, title, subtitle, features, bottomCard }: LeftHeroLayoutProps) => (
     <div className="relative flex w-full min-h-[620px] flex-col justify-between overflow-hidden rounded-l-2xl bg-gray-50 p-8 text-gray-800 dark:bg-[#0d2010] dark:text-[#e8f5e9] md:w-1/2">
@@ -176,7 +173,7 @@ export default function ASIFAuthFlow() {
 
                 <p className="mt-5 text-center text-xs text-gray-500 dark:text-gray-400">
                   Don&apos;t have an account?{' '}
-                  <button onClick={handleRegisterClick} className="font-bold text-[#0F5C3B] hover:underline dark:text-[#4ade80]">Register Now</button>
+                  <a href={NGELECTIONPOLLS_SIGNUP_URL} className="font-bold text-[#0F5C3B] hover:underline dark:text-[#4ade80]">Register Now</a>
                 </p>
               </div>
 
@@ -330,9 +327,9 @@ export default function ASIFAuthFlow() {
                   <Send className="h-3.5 w-3.5" /> Resend Code
                 </button>
 
-                <button onClick={handleRegisterClick} className="inline-flex items-center gap-1 text-xs font-semibold text-[#0F5C3B] hover:underline dark:text-[#4ade80]">
+                <a href={NGELECTIONPOLLS_SIGNUP_URL} className="inline-flex items-center gap-1 text-xs font-semibold text-[#0F5C3B] hover:underline dark:text-[#4ade80]">
                   <ArrowLeft className="h-3.5 w-3.5" /> Back to Sign Up
-                </button>
+                </a>
               </div>
             </div>
           </>

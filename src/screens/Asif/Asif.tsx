@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
-  Users, UserCheck, Building, MapPin, Trophy, ArrowRight, ShieldAlert,
+  Users, Globe2, UserPlus, Target, MapPin, ShieldAlert,
 } from "lucide-react";
+import { useReporterCoverage } from "@/hooks/useReporterCoverage";
+import { eyewitnessHeroStats } from "@/lib/eyewitness-hero-stats";
+import { NGELECTIONPOLLS_SIGNUP_URL } from "@/lib/registration";
 import { ActiveCitizensHeroSection } from "./sections/ActiveCitizensHeroSection/ActiveCitizensHeroSection";
-import type { TickerDonation } from "./sections/ActiveCitizensHeroSection/ActiveCitizensHeroSection";
 import { AwardOverviewSection } from "./sections/AwardOverviewSection/AwardOverviewSection";
 import { DemocracyImpactMetricsSection } from "./sections/DemocracyImpactMetricsSection/DemocracyImpactMetricsSection";
 import { MainNavigationSection } from "./sections/MainNavigationSection/MainNavigationSection";
@@ -14,46 +16,17 @@ import { PartnersSection } from "./sections/PartnersSection/PartnersSection";
 import { ReportVerificationSection } from "./sections/ReportVerificationSection/ReportVerificationSection";
 import { ReportingAndPrizesSection } from "./sections/ReportingAndPrizesSection/ReportingAndPrizesSection";
 import { SiteFooterSection } from "./sections/SiteFooterSection/SiteFooterSection";
-import { StateDonationProgressSection } from "./sections/StateDonationProgressSection/StateDonationProgressSection";
+import { EyewitnessCoverageSection } from "./sections/EyewitnessCoverageSection/EyewitnessCoverageSection";
 
-interface SummaryStats {
-  totalRaisedNaira: number;
-  registeredCitizens: number;
-  verifiedReporters: number;
-  statesAndFct: number;
-  daysToElection: number;
-}
+const heroStatIcons = {
+  profiles: Users, states: Globe2, needed: UserPlus, filled: Target, pollingUnits: MapPin,
+};
 
 export const Asif = (): JSX.Element => {
-  const [stats, setStats] = useState<SummaryStats | null>(null);
-  const [tickerDonations, setTickerDonations] = useState<TickerDonation[]>([]);
-
-  useEffect(() => {
-    fetch("/api/stats/summary")
-      .then((r) => r.json())
-      .then((data: SummaryStats) => setStats(data))
-      .catch((err) => console.error("[Asif] failed to load stats:", err));
-
-    const loadDonations = () =>
-      fetch("/api/donations/recent?limit=15")
-        .then((r) => r.json())
-        .then((data: { donations: TickerDonation[] }) => setTickerDonations(data.donations))
-        .catch((err) => console.error("[Asif] failed to load ticker donations:", err));
-
-    loadDonations();
-    const interval = setInterval(loadDonations, 30_000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const bottomStats = stats
-    ? [
-        { icon: Building,  value: `₦ ${stats.totalRaisedNaira.toLocaleString("en-NG")}`, label: "Raised Till Date" },
-        { icon: Users,     value: stats.registeredCitizens.toLocaleString("en-NG"),       label: "Registered Citizens" },
-        { icon: UserCheck, value: stats.verifiedReporters.toLocaleString("en-NG"),        label: "Verified Reporters" },
-        { icon: MapPin,    value: String(stats.statesAndFct),                             label: "States & FCT" },
-        { icon: Trophy,    value: String(stats.daysToElection),                           label: "Days To Election" },
-      ]
-    : [];
+  const { coverage, error, loading, retry } = useReporterCoverage();
+  const bottomStats = eyewitnessHeroStats(coverage).map((stat) => ({
+    ...stat, icon: heroStatIcons[stat.id],
+  }));
 
   return (
     /* ── Root: deep forest black — the "canvas" every section paints onto ── */
@@ -71,15 +44,25 @@ export const Asif = (): JSX.Element => {
               <span className="text-[#4ade80]">Active Citizens Heros.</span>
             </>
           }
-          description="20 active citizens in each polling unit. One mission: to observe, report, and protect the integrity of our elections. Your action. Our democracy."
-          primaryButton={{ label: "Register to Participate", icon: ShieldAlert, onClick: () => {} }}
-          secondaryButton={{ label: "Support a State", icon: ArrowRight, onClick: () => {} }}
+          description="5 active citizens in each polling unit. One mission: to observe, report, and protect the integrity of our elections. Your action. Our democracy."
+          primaryButton={{ label: "Register to Participate", icon: ShieldAlert, href: NGELECTIONPOLLS_SIGNUP_URL }}
+          secondaryButton={{ label: "Donate", onClick: () => {} }}
           bottomStats={bottomStats}
-          tickerDonations={tickerDonations}
+          bottomStatsNote={
+            <span role={error ? "alert" : "status"}>
+              {error ? (
+                <>Live reporter statistics are unavailable—not zero.{" "}
+                  <button type="button" onClick={retry} className="font-bold text-white underline focus:outline-none focus:ring-2 focus:ring-[#4ade80]">Try again</button>
+                </>
+              ) : coverage ? (
+                <>NGelectionpolls · Completed profiles with matched coverage locations · Five reporters per polling unit · Stats refresh every minute</>
+              ) : loading ? "Loading live eyewitness reporter statistics…" : "Live reporter statistics are unavailable."}
+            </span>
+          }
         />
 
-        {/* 2 ── State map — hunter-green-black */}
-        <StateDonationProgressSection />
+        {/* 2 ── Eyewitness reporter coverage map */}
+        <EyewitnessCoverageSection />
 
         {/* 3 ── About the Award — obsidian-green: dark section wrapper */}
         <section

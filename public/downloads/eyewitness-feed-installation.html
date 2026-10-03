@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NGelectionpolls eyewitness feed installation</title>
+  <style>
+    body { margin:0; padding:32px 20px; background:#071410; color:#e8f5e9; font:16px/1.7 system-ui,sans-serif; }
+    main { max-width:760px; margin:auto; }
+    h1,h2 { line-height:1.25; }
+    a { color:#4ade80; }
+    .button { display:inline-block; padding:12px 20px; background:#0b5a35; border-radius:12px; color:white; font-weight:700; text-decoration:none; }
+    .notice { padding:16px; border:1px solid #53725c; border-radius:12px; background:#10271a; }
+    code { overflow-wrap:anywhere; font-size:.9em; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>NGelectionpolls eyewitness registration feed</h1>
+  <p class="notice"><strong>Prepared, not installed or published.</strong> ASIF's Hero is ready.
+    Real registrations will appear after the new feed is added to the separate NGelectionpolls backend.</p>
+  <p><a class="button" href="https://e59a3f66-9810-474e-a2c3-b2a49031445d-00-2bj6lavtfwb2n.kirk.replit.dev/downloads/ngelectionpolls-recent-eyewitness-feed.zip" download>Download backend endpoint package</a></p>
+  <h2>What it uses</h2>
+  <p>The existing MongoDB database, User model, and coverage registry on NGelectionpolls.
+    No new database, credentials, migrations, dependencies, or record changes are needed.</p>
+  <h2>Installation</h2>
+  <ol>
+    <li>Extract the package. It contains a README and one new backend route.</li>
+    <li>Add <code>src/app/api/recent-eyewitness-registrations/route.ts</code> to the existing NGelectionpolls source. Do not overwrite existing routes.</li>
+    <li>Run the NGelectionpolls backend's build and tests. This route has been tested here with simulated data, not against live MongoDB.</li>
+    <li>Confirm the platform's privacy notice and permissions allow public first-name/initial activity displays.</li>
+    <li>Only when separately authorized to release that backend change, check that its recent-registration endpoint returns HTTP 200.</li>
+    <li>The ASIF preview will detect the feed automatically on its next refresh, within 30 seconds.</li>
+  </ol>
+  <p><strong>ASIF has not been published. Do not publish it without separate approval.</strong></p>
+  <h2>Display and privacy</h2>
+  <p>The feed returns up to 15 newest eligible eyewitness account registrations:
+    registration time, first name, surname initial, and assigned state only.
+    Eligibility uses completed biodata and matched state/LGA/ward coverage locations, as on the map.
+    Account creation time is used because a separate profile-completion or state-assignment timestamp
+    is not stored in the uploaded model.</p>
+  <p>No full surnames, emails, phone numbers, account IDs, exact polling locations, identity documents,
+    photos, or banking details are exposed. First names and initials are still personal data,
+    so confirm that the intended public display is permitted before activation.</p>
+  <p>Until the endpoint is available, ASIF displays an unavailable message with retry.
+    It never substitutes sample registrations or labels unavailable data as live.</p>
+</main>
+</body>
+</html>

@@ -1,26 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { NGELECTIONPOLLS_SIGNUP_URL } from "@/lib/registration";
 import {
   Trophy, Star, MapPin, Users, ClipboardList, BadgeCheck,
   CheckCircle, UserPlus, ArrowRight, Sparkles, Medal,
   ShieldCheck, AlertTriangle, Banknote, Clock, EyeOff,
   Car, FileText, Package, Flag,
 } from "lucide-react";
-import dynamic from "next/dynamic";
 import { PageLayout } from "@/screens/Asif/PageLayout";
 import { AnimateIn } from "@/components/AnimateIn";
-import type { StateMapData } from "@/components/NigeriaMapHome";
-
-const NigeriaMap = dynamic(() => import("@/components/NigeriaMapHome"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-[440px] w-full animate-pulse rounded-3xl"
-      style={{ background: "linear-gradient(135deg, rgba(11,90,53,0.15), rgba(11,90,53,0.08))" }} />
-  ),
-});
+import { EyewitnessReporterMap } from "@/components/EyewitnessReporterMap";
 
 const prizes = [
   {
@@ -74,8 +66,6 @@ const keyPoints = [
 ];
 
 export default function TheAwardPage() {
-  const [selectedState, setSelectedState] = useState("");
-
   return (
     <PageLayout activePage="The Award">
       <div style={{ background: "#060d09" }}>
@@ -126,7 +116,7 @@ export default function TheAwardPage() {
                 <AnimateIn direction="left" delay={300}>
                   <div className="mt-7 flex flex-wrap items-center gap-3">
                     <Link
-                      href="/register"
+                      href={NGELECTIONPOLLS_SIGNUP_URL}
                       className="group relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl px-6 text-sm font-bold text-[#0d1b12] transition-all hover:-translate-y-0.5"
                       style={{ background: "#fea309", boxShadow: "0 4px 24px rgba(254,163,9,0.40)" }}
                     >
@@ -216,20 +206,7 @@ export default function TheAwardPage() {
               </div>
 
               {/* Interactive map */}
-              <div className="relative w-full overflow-hidden rounded-3xl"
-                style={{ boxShadow: "0 24px 60px rgba(0,0,0,0.50), 0 0 0 1px rgba(74,222,128,0.08)", background: "rgba(8,16,12,0.80)" }}>
-                <NigeriaMap
-                  selectedStateId={selectedState}
-                  onSelectState={(s: StateMapData) => setSelectedState(s.id)}
-                />
-                <div className="flex items-center gap-3 rounded-b-3xl px-4 py-3"
-                  style={{ background: "rgba(6,13,9,0.75)", borderTop: "1px solid rgba(74,222,128,0.10)" }}>
-                  <MapPin className="h-4 w-4 shrink-0 text-[#fea309]" />
-                  <p className="text-[12px] font-semibold text-white/75">
-                    Hover any state to see live funding — monitoring all 36 states &amp; FCT
-                  </p>
-                </div>
-              </div>
+              <EyewitnessReporterMap />
             </div>
           </div>
         </section>
@@ -397,7 +374,7 @@ export default function TheAwardPage() {
                       reporting incidents, and fighting for a transparent democracy.
                     </p>
                     <div className="mt-7 flex flex-wrap items-center gap-3">
-                      <Link href="/register"
+                      <Link href={NGELECTIONPOLLS_SIGNUP_URL}
                         className="group relative flex h-12 items-center gap-2 overflow-hidden rounded-2xl px-6 text-sm font-bold text-[#0d1b12] transition-all hover:-translate-y-0.5"
                         style={{ background: "#fea309", boxShadow: "0 4px 20px rgba(254,163,9,0.40)" }}>
                         <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />

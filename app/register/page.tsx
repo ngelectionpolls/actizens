@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { NGELECTIONPOLLS_LOGIN_URL } from "@/lib/registration";
 import {
   User,
   Mail,
@@ -464,7 +465,7 @@ export default function RegisterPage() {
 
               <p className="mt-6 pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
-                <Link href="/login" className="font-bold text-[#0b5a35] hover:underline dark:text-[#4ade80]">Sign in</Link>
+                <Link href={NGELECTIONPOLLS_LOGIN_URL} className="font-bold text-[#0b5a35] hover:underline dark:text-[#4ade80]">Sign in</Link>
               </p>
             </form>
           </div>
